@@ -8,6 +8,7 @@
 #include <QSettings>
 #include "profiledata.h"
 #include <directorymonitor.h>
+
 #include "settingsdialog.h"
 
 namespace Ui {

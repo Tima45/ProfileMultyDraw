@@ -15,7 +15,7 @@ ProfileInfoBlock::ProfileInfoBlock(QWidget *parent) :
 
 ProfileInfoBlock::~ProfileInfoBlock()
 {
-    delete ui;
+    delete ui; //sfdad
 }
 
 void ProfileInfoBlock::setFrame(int id)
