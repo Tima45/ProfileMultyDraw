@@ -47,6 +47,9 @@ void ProfileInfoBlock::setMaxValueData(double maxAngleLeg1, double maxAngleLeg2,
     ui->maxYLabel->setText(QString::number(maxY));
     ui->maxAmpLeg1Label->setText(QString::number(maxAmpLeg1));
     ui->maxAmpLeg2Label->setText(QString::number(maxAmpLeg2));
+
+    ui->commonXLabel->setText(QString::number(qRound(maxX*10)/10.0));
+    ui->commonYLabel->setText(QString::number(qRound(maxY*10)/10.0));
 }
 
 void ProfileInfoBlock::setWidth(double width1, double width2)
@@ -54,6 +57,8 @@ void ProfileInfoBlock::setWidth(double width1, double width2)
     ui->width1Label->setText(QString::number(width1));
     ui->width2Label->setText(QString::number(width2));
     ui->sqLabelMid->setText(QString::number(M_PI*width1*width2/4.0));
+    ui->commonWidth1Label->setText(QString::number(qRound(width1*10)/10.0));
+    ui->commonWidth2Label->setText(QString::number(qRound(width2*10)/10.0));
 }
 
 void ProfileInfoBlock::setCurrent(double currentLeg1, double currentLeg2, double current)
@@ -61,6 +66,7 @@ void ProfileInfoBlock::setCurrent(double currentLeg1, double currentLeg2, double
     ui->currentLeg1Label->setText(QString::number(currentLeg1));
     ui->currentLeg2Label->setText(QString::number(currentLeg2));
     ui->currentLabel->setText(QString::number(current));
+    ui->commonCurrentLabel->setText(QString::number(qRound(current*1000)/1000.0));
 }
 
 void ProfileInfoBlock::setMassXY(double massX, double massY)

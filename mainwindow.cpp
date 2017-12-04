@@ -91,10 +91,14 @@ void MainWindow::addProfileToPlot(QString fileName)
     if(!find){
         QColor randomColor(qrand()%256,qrand()%256,qrand()%256);
         ProfileData *newProfile = new ProfileData(fileName,ui->plot,ui->scrollArea,randomColor,wireLength,legLength,legWidth,legsAngle,deltaX,deltaY,luftAngle,showMirror,angleToRKoef,0);
-        connect(newProfile,SIGNAL(wantToBeDeleted(QString)),this,SLOT(deleteProfileFromPlot(QString)));
-        profiles.append(newProfile);
-        ui->plot->rescaleAxes();
-        ui->plot->replot();
+        if(!newProfile->errors){
+            connect(newProfile,SIGNAL(wantToBeDeleted(QString)),this,SLOT(deleteProfileFromPlot(QString)));
+            profiles.append(newProfile);
+            ui->plot->rescaleAxes();
+            ui->plot->replot();
+        }else{
+
+        }
     }
 }
 

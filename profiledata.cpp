@@ -14,19 +14,24 @@ ProfileData::ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *i
     color = inColor;
     angleToMMKoef = inAngleToMMKoef;
 
+    errors = false;
     readData(fileName);
-    findBorders();
-    loadFrames(wireLength,legLength,legWidth,deltaX,deltaY,luftAngle,legsAngle,showMirror);
+    if(!errors){
+        findBorders();
+        loadFrames(wireLength,legLength,legWidth,deltaX,deltaY,luftAngle,legsAngle,showMirror);
 
-    addToPlot();
-    addToScrollArea();
-    showFrame(0);
+        addToPlot();
+        addToScrollArea();
+        showFrame(0);
+    }
 }
 
 ProfileData::~ProfileData()
 {
-    deleteFromPlot();
-    deleteFromScrollArea();
+    if(!errors){
+        deleteFromPlot();
+        deleteFromScrollArea();
+    }
 }
 
 void ProfileData::deletePressed()
@@ -238,15 +243,18 @@ void ProfileData::readData(QString fileName)
 {
     if(!QFileInfo(fileName).isFile()){
         QMessageBox::critical(scrollArea,"Ошибка",fileName+"\n Не файл.");
+        errors = true;
         return;
     }
     if(!fileName.endsWith(".csv")){
         QMessageBox::critical(scrollArea,"Ошибка","Не верное расширение\n Необходимый формат .csv");
+        errors = true;
         return;
     }
     QFile f(fileName);
     if(!f.open(QIODevice::ReadOnly | QIODevice::Text)){
         QMessageBox::critical(scrollArea,"Ошибка","Файл не открылся.");
+        errors = true;
         return;
     }
     //---------------------------------------------------------------------------------------
@@ -261,6 +269,7 @@ void ProfileData::readData(QString fileName)
     if(!f.atEnd()){
         while(!findData || !f.atEnd()){
             QString rawLine = f.readLine();
+            if(rawLine == "") break;
             if(dateTampl.exactMatch(rawLine)){
                 rawLine.remove(0,17);
                 rawLine.chop(2);
@@ -300,20 +309,22 @@ void ProfileData::readData(QString fileName)
                     if(!good){
                         f.close();
                         QMessageBox::critical(scrollArea,"Ошибка","Файл поврежден.");
+                        errors = true;
                         return;
                     }
                 } else{
                     f.close();
                     QMessageBox::critical(scrollArea,"Ошибка","Файл поврежден.");
+                    errors = true;
                     return;
                 }
             }
         }else{
             QMessageBox::critical(scrollArea,"Ошибка","Данные не найдены.");
+            errors = true;
         }
     }
     f.close();
-
 }
 
 void ProfileData::findBorders()

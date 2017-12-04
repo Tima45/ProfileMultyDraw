@@ -264,6 +264,9 @@ void Frame::findPart(double percentOfBeam)
         part += 0.1;
         findMass(part);
     }
+    if(part >= 100){
+        part = 2;
+    }
 }
 
 double Frame::countCurrent(int start, int stop)

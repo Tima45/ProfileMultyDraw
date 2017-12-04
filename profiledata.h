@@ -18,6 +18,7 @@ public:
     ProfileData(QObject *parent = 0);
     ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *inScrollArea, QColor inColor, double wireLength, double legLength,double legWidth,double legsAngle, double deltaX, double deltaY, double luftAngle,bool showMirror,double inAngleToMMKoef, QObject *parent);
     ~ProfileData();
+    bool errors;
     QString fileName;
     QColor color;
 signals:
