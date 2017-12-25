@@ -67,6 +67,7 @@ void Frame::loadData(QVector<double> *inRawAngles,QVector<double> *inRawAmpers)
 {
     ampers.clear();
     angles.clear();
+    smoothAnglesDiffs.clear();
     if(!inRawAngles->isEmpty() && !inRawAmpers->isEmpty()){
         if(dir == goDown){
             for(int i = startIndex; i < stopIndex; i++){
@@ -80,6 +81,16 @@ void Frame::loadData(QVector<double> *inRawAngles,QVector<double> *inRawAmpers)
             }
         }
     }
+    for(int i = 1; i < angles.count(); i++){
+        smoothAnglesDiffs.append(angles.at(i-1)-angles.at(i));
+    }
+
+    WaveletSpectrum *dwt = new WaveletSpectrum(smoothAnglesDiffs,WaveletSpectrum::BSPLINE_309);
+    for(int level = 3; level < dwt->getLevels();level++){
+        dwt->levelFilter(level,0);
+    }
+    smoothAnglesDiffs = dwt->toData();
+
 }
 
 void Frame::findZeroAngleIndex()
@@ -182,7 +193,7 @@ void Frame::findCurrent()
 {
     if(!ampers.isEmpty() && !angles.isEmpty()){
         currentLeg1 = countCurrent(0,zeroAngleIndex);
-        currentLeg2 = countCurrent(zeroAngleIndex,ampers.count());
+        currentLeg2 = countCurrent(zeroAngleIndex,ampers.count()-1);
         current = (currentLeg1+currentLeg2)/2.0;
     }
 }
@@ -276,8 +287,8 @@ double Frame::countCurrent(int start, int stop)
     if(!ampers.isEmpty()){
         double r1 = sqrt(wireLength*wireLength + legLength*legLength - 2*wireLength*legLength*cos((1-legsAngle/360.0)*M_PI));
         result += 1000*ampers.at(start);
-        for(int i = start+1;i < stop; i++){
-            double deltaFi = fabs(angles.at(i-1) - angles.at(i));
+        for(int i = start;i < stop; i++){
+            double deltaFi = fabs(smoothAnglesDiffs.at(i));
             double squWay = (M_PI*r1*r1*deltaFi/360.0)-(M_PI*wireLength*wireLength*deltaFi/360.0);
             double squLeg = legLength*legWidth;
             result += 1000*ampers.at(i)*squWay/squLeg;

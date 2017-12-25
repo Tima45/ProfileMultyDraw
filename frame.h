@@ -19,6 +19,7 @@ public:
     QVector<double> ampers;
 
     QVector<double> smoothAmpers;
+    QVector<double> smoothAnglesDiffs;
     int noiseReductionPercent = 0;
 
     void loadData(QVector<double> *inRawAngles,QVector<double> *inRawAmpers);
