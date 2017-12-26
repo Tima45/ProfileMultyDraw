@@ -115,6 +115,7 @@ void ProfileWindow::initPlot()
     ui->plot->axisRect()->setRangeZoom(Qt::Horizontal | Qt::Vertical);
     ui->plot->addLayer("low");
     ui->plot->addLayer("high");
+    ui->plot->moveLayer(ui->plot->layer("grid"),ui->plot->layer("high"));
     ui->plot->xAxis->setLabel("Х (мм)");
     ui->plot->yAxis->setLabel("Y (мм)");
 
@@ -189,6 +190,7 @@ void ProfileWindow::initPlot()
     peak->position->setCoords(peakX,peakY);
     ui->plot->addItem(peak);
     peak->setLayer("high");
+
 }
 
 void ProfileWindow::on_holeBox_valueChanged(int arg1)
