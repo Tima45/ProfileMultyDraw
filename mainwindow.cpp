@@ -45,7 +45,15 @@ MainWindow::~MainWindow()
         profiles.at(i)->deleteLater();
     }
     profiles.clear();
-    delete ui;   
+    delete ui;
+}
+
+void MainWindow::topIt()
+{
+    raise();
+    activateWindow();
+    showNormal();
+    setWindowState(Qt::WindowActive);
 }
 void MainWindow::on_selectFolderBt_clicked()
 {
@@ -68,6 +76,7 @@ void MainWindow::scanProfiles(QString folderPath)
     }
     monitor = new DirectoryMonitor(folderPath,1000,".csv",false);
     connect(monitor,SIGNAL(fileChanged(QString)),this,SLOT(newFile(QString)));
+    connect(monitor,SIGNAL(fileChanged(QString)),this,SLOT(topIt()));
     monitor->start();
 
     QDir dir(folderPath);

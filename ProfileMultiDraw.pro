@@ -48,11 +48,11 @@ FORMS    += mainwindow.ui \
 
 INCLUDEPATH += "C:/Librarys/WaveletSpectrum/include"
 LIBS += "C:/Librarys/WaveletSpectrum/lib/libWaveletSpectrum.a"
+LIBS += "C:/Librarys/gsl/lib/libgsl.a"
+
 
 INCLUDEPATH += "C:/Librarys/DirectoryMonitor/include"
 LIBS += "C:/Librarys/DirectoryMonitor/lib/libDirectoryMonitor.a"
-LIBS += "C:/Librarys/gsl/lib/libgsl.a"
-
 RC_FILE = icon.rc
 
 RESOURCES +=

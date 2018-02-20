@@ -37,7 +37,7 @@ public:
     static QString angleToRKoefNumeratorFieldName;
     static QString angleToRKoefDenominatorFieldName;
 private slots:
-
+    void topIt();
     void on_selectFolderBt_clicked();
 
     void on_profilesList_itemActivated(QListWidgetItem *item);
