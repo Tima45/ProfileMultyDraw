@@ -309,10 +309,10 @@ void ProfileWindow::buildNetworkColorMap()
             profileIsCorrect = true;
             ui->networkRadio->setChecked(true);
             for(int i = bordersIndex.at(0); i < bordersIndex.at(1); i++){
-                xProfile.append(fabs(ampers.at(i)));
+                yProfile.append(fabs(ampers.at(i)));
             }
             for(int i = bordersIndex.at(2); i < bordersIndex.at(3); i++){
-                yProfile.append(fabs(ampers.at(i)));
+                xProfile.append(fabs(ampers.at(i)));
             }
             double minAbs = fabs(xProfile.first());
             for(int i = 1; i < xProfile.count(); i++){
@@ -368,21 +368,41 @@ void ProfileWindow::buildNetworkColorMap()
             }
             generator->generate(pic,xyProfile);
 
-            double error = 0;
+
+            QVector<double> xyProfileResult;
+
+            for(int x = 0; x < 128; x++){
+                double summ = 0;
+                for(int y = 0; y < 128; y++){
+                    summ += pic[y][x];
+                }
+                xyProfileResult.append(summ);
+            }
             for(int y = 0; y < 128; y++){
+                double summ = 0;
                 for(int x = 0; x < 128; x++){
-                    error += (yProfile[y] - pic[y][x]/128.0);
+                    summ += pic[y][x];
+                }
+                xyProfileResult.append(summ);
+            }
+            double maxResult = 0;
+            for(int i = 0; i < xyProfileResult.count(); i++){
+                if(xyProfileResult.at(i) > maxResult){
+                    maxResult = xyProfileResult.at(i);
                 }
             }
-            for(int x = 0; x < 128; x++){
-                for(int y = 0; y < 128; y++){
-                    error += (xProfile[x] - pic[y][x]/128.0);
-                }
+            for(int i = 0; i < xyProfileResult.count(); i++){
+                xyProfileResult[i] /= maxResult;
+            }
+
+            double error = 0;
+            for(int i = 0; i < xyProfile.count(); i++){
+                error += fabs(xyProfile.at(i)-xyProfileResult.at(i));
             }
             error /= 256;
             error *= 100;
 
-            ui->errorLabel->setText(QString::number(fabs(error)));
+            ui->errorLabel->setText(QString::number(fabs(100.0-error)));
 
         }else{
             ui->networkRadio->setCheckable(false);
