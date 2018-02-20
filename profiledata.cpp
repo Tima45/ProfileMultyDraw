@@ -6,7 +6,7 @@ ProfileData::ProfileData(QObject *parent) : QObject(parent)
 
 }
 
-ProfileData::ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *inScrollArea, QColor inColor, double wireLength, double legLength, double legWidth, double legsAngle, double deltaX, double deltaY, double luftAngle, bool showMirror, double inAngleToMMKoef, QObject *parent) : QObject(parent)
+ProfileData::ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *inScrollArea, QColor inColor, double wireLength, double legLength, double legWidth, double legsAngle, double deltaX, double deltaY, double luftAngle, bool showMirror, double inAngleToMMKoef,void *profileGenerator, QObject *parent) : QObject(parent)
 {
     fileName = inFileName;
     plot = inPlot;
@@ -16,6 +16,7 @@ ProfileData::ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *i
 
     errors = false;
     readData(fileName);
+    this->profileGenerator = profileGenerator;
     if(!errors){
         findBorders();
         loadFrames(wireLength,legLength,legWidth,deltaX,deltaY,luftAngle,legsAngle,showMirror);
@@ -203,7 +204,7 @@ void ProfileData::showProfileWindow()
                                              frames.at(currentFrameId)->massLineLeg2StartY,
                                              frames.at(currentFrameId)->massLineLeg2StopX,
                                              frames.at(currentFrameId)->massLineLeg2StopY,
-                                             scrollArea);
+                                             profileGenerator,scrollArea);
         p->setWindowTitle(fileName);
         p->setAttribute(Qt::WA_DeleteOnClose);
         p->show();

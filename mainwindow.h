@@ -10,6 +10,7 @@
 #include <directorymonitor.h>
 
 #include "settingsdialog.h"
+#include "profilegenerator.h"
 
 namespace Ui {
 class MainWindow;
@@ -79,6 +80,7 @@ private:
     QList<ProfileData*> profiles;
     void initPlot();
     DirectoryMonitor *monitor = nullptr;
+    ProfileGenerator *generator = nullptr;
 };
 
 #endif // MAINWINDOW_H

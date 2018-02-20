@@ -1,22 +1,24 @@
 #include "profilewindow.h"
 #include "ui_profilewindow.h"
 
-ProfileWindow::ProfileWindow(   QVector<double> inAngles,
+ProfileWindow::ProfileWindow(QVector<double> inAngles,
                                 QVector<double> inAmpers,
                                 double inWireLength,
-                                double inLegLength,double inLegsAngle,
+                                double inLegLength, double inLegsAngle,
                                 int inZeroAngleId,
                                 bool inShowMirror,
                                 double inDeltaX,
                                 double inDeltaY,
                                 double inPeakX, double inPeakY,
-                                double inMiddleLeg1StartX, double inMiddleLeg1StartY,double inMiddleLeg1StopX, double inMiddleLeg1StopY,
-                                double inMiddleLeg2StartX,double inMiddleLeg2StartY,double inMiddleLeg2StopX,double inMiddleLeg2StopY,
+                                double inMiddleLeg1StartX, double inMiddleLeg1StartY, double inMiddleLeg1StopX, double inMiddleLeg1StopY,
+                                double inMiddleLeg2StartX, double inMiddleLeg2StartY, double inMiddleLeg2StopX, double inMiddleLeg2StopY, void *profileGenerator,
                                 QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ProfileWindow)
 {
+    generator = (ProfileGenerator*)profileGenerator;
     ui->setupUi(this);
+    profileIsCorrect = false;
     angles = inAngles;
     ampers = inAmpers;
     wireLength = inWireLength;
@@ -41,6 +43,7 @@ ProfileWindow::ProfileWindow(   QVector<double> inAngles,
     middleLeg2StopY = inMiddleLeg2StopY;
 
     initPlot();
+    buildNetworkColorMap();
     reDraw();
 }
 
@@ -68,38 +71,84 @@ void ProfileWindow::reDraw()
             sign = -1;
         }
         if(currentMaxAbsValue != 0){
-            //------------------------------------------------------
-            colorMap->data()->clear();
-            colorMap->data()->clear();
-            colorMap->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
+            if(ui->mulRadio->isChecked()){
+                colorMapNetwork->setVisible(false);
+                colorMap->setVisible(true);
+                //------------------------------------------------------
+                colorMap->data()->clear();
+                colorMap->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
 
-            colorMap->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
-            colorMap->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
-            colorMap->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
+                colorMap->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
+                colorMap->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
+                colorMap->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
 
-            for(int i = 0; i < zeroAngleId; i++){
-                for(int j = zeroAngleId; j < angles.count(); j++){
-                    double x = 0;
-                    double y = 0;
-                    double a1 = angles.at(i);
-                    double a2 = angles.at(j);
-                    bool ok = true;
-                    Frame::anglesToXY(a1,a2,wireLength,legLength,legsAngle,x,y,ok);
-                    if(ok){
-                        x += deltaX;
-                        y += deltaY;
-                        if(showMirror){
-                            x *= (-1);
+                for(int i = 0; i < zeroAngleId; i++){
+                    for(int j = zeroAngleId; j < angles.count(); j++){
+                        double x = 0;
+                        double y = 0;
+                        double a1 = angles.at(i);
+                        double a2 = angles.at(j);
+                        bool ok = true;
+                        Frame::anglesToXY(a1,a2,wireLength,legLength,legsAngle,x,y,ok);
+                        if(ok){
+                            x += deltaX;
+                            y += deltaY;
+                            if(showMirror){
+                                x *= (-1);
+                            }
+                            int Xid = 0;
+                            int Yid = 0;
+                            colorMap->data()->coordToCell(x,y,&Xid,&Yid);
+                            double mull = (sign*ampers.at(j) * ampers.at(i))/currentMaxAbsValue;
+                            colorMap->data()->setCell(Xid,Yid,mull);
                         }
-                        int Xid = 0;
-                        int Yid = 0;
-                        colorMap->data()->coordToCell(x,y,&Xid,&Yid);
-                        double mull = (sign*ampers.at(j) * ampers.at(i))/currentMaxAbsValue;
-                        colorMap->data()->setCell(Xid,Yid,mull);
                     }
                 }
+                colorMap->rescaleDataRange();
+
             }
-            colorMap->rescaleDataRange();
+            if(ui->networkRadio->isChecked()){
+                if(profileIsCorrect){
+                    colorMapNetwork->setVisible(true);
+                    colorMap->setVisible(false);
+                    colorMapNetwork->data()->clear();
+                    colorMapNetwork->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
+
+                    colorMapNetwork->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
+                    colorMapNetwork->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
+                    colorMapNetwork->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
+                    double yR = 128.0/(bordersIndex.at(1) - bordersIndex.at(0));
+                    double xR = 128.0/(bordersIndex.at(3) - bordersIndex.at(2));
+
+                    for(int i = bordersIndex.at(0); i < bordersIndex.at(1); i++){
+                        for(int j = bordersIndex.at(2); j < bordersIndex.at(3); j++){
+
+                            double x = 0;
+                            double y = 0;
+                            double a1 = angles.at(i);
+                            double a2 = angles.at(j);
+                            bool ok = true;
+                            Frame::anglesToXY(a1,a2,wireLength,legLength,legsAngle,x,y,ok);
+                            if(ok){
+                                x += deltaX;
+                                y += deltaY;
+                                if(showMirror){
+                                    x *= (-1);
+                                }
+                                int Xid = 0;
+                                int Yid = 0;
+
+                                int picY = qRound((i-bordersIndex.at(0))*yR);
+                                int picX = qRound((j-bordersIndex.at(2))*xR);
+
+                                colorMapNetwork->data()->coordToCell(x,y,&Xid,&Yid);
+                                colorMapNetwork->data()->setCell(Xid,Yid,sign*pic[picY][picX]*currentMaxAbsValue);
+                            }
+                        }
+                    }
+                    colorMapNetwork->rescaleDataRange();
+                }
+            }
             colorScale->setDataRange(QCPRange(-currentMaxAbsValue,currentMaxAbsValue));
             ui->plot->replot();
         }
@@ -139,6 +188,13 @@ void ProfileWindow::initPlot()
     colorMap->setLayer("low");
     ui->plot->xAxis->setRange(-30,30);
     ui->plot->yAxis->setRange(-30,30);
+
+    colorMapNetwork = new QCPColorMap(ui->plot->xAxis,ui->plot->yAxis);
+    colorMapNetwork->setColorScale(colorScale);
+    colorMapNetwork->setTightBoundary(true);
+    ui->plot->addPlottable(colorMapNetwork);
+    colorMapNetwork->setLayer("low");
+    colorMapNetwork->setVisible(false);
     //-----------------------------------------------------------------------
     profilometrAxis = new QCPItemLine(ui->plot);
     QPen axP;
@@ -218,4 +274,161 @@ void ProfileWindow::on_pushButton_clicked()
 {
     QString s = QFileDialog::getSaveFileName(this,"Сохранить скриншот","","png");
     ui->plot->grab().save(s+".png","png");
+}
+
+void ProfileWindow::buildNetworkColorMap()
+{
+    double currentMaxAbsValue = 0;
+    for(int i = 0; i < ampers.count(); i++){
+        if(fabs(ampers.at(i)) > currentMaxAbsValue){
+            currentMaxAbsValue = fabs(ampers.at(i));
+        }
+    }
+
+    for(int i = 1; i < ampers.count(); i++){
+        int shakalValue1 = (int)(ampers.at(i-1)/currentMaxAbsValue*5);
+        int shakalValue2 = (int)(ampers.at(i)/currentMaxAbsValue*5);
+        if((shakalValue1 == 0 && shakalValue2 != 0)){
+            bordersIndex.append(i-1);
+        }
+        if((shakalValue2 == 0 && shakalValue1 != 0)){
+            bordersIndex.append(i);
+        }
+    }
+    if(bordersIndex.count() == 4){
+        if((bordersIndex.at(0) < bordersIndex.at(1)) &&
+           (bordersIndex.at(2) < bordersIndex.at(3)) &&
+           (bordersIndex.at(1) < bordersIndex.at(2)) &&
+           (bordersIndex.at(1) < zeroAngleId) &&
+           (bordersIndex.at(2) > zeroAngleId))
+        {
+            QVector<double> xProfile;
+            QVector<double> yProfile;
+            QVector<double> xyProfile;
+
+            profileIsCorrect = true;
+            ui->networkRadio->setChecked(true);
+            for(int i = bordersIndex.at(0); i < bordersIndex.at(1); i++){
+                xProfile.append(fabs(ampers.at(i)));
+            }
+            for(int i = bordersIndex.at(2); i < bordersIndex.at(3); i++){
+                yProfile.append(fabs(ampers.at(i)));
+            }
+            double minAbs = fabs(xProfile.first());
+            for(int i = 1; i < xProfile.count(); i++){
+                if(fabs(xProfile.at(i)) < minAbs){
+                    minAbs = fabs(xProfile.at(i));
+                }
+            }
+            for(int i = 0; i < xProfile.count(); i++){
+                xProfile[i] -= minAbs;
+            }
+
+            minAbs = fabs(yProfile.first());
+            for(int i = 1; i < yProfile.count(); i++){
+                if(fabs(yProfile.at(i)) < minAbs){
+                    minAbs = fabs(yProfile.at(i));
+                }
+            }
+            for(int i = 0; i < yProfile.count(); i++){
+                yProfile[i] -= minAbs;
+            }
+
+            resize(xProfile,124);
+            resize(yProfile,124);
+
+            xProfile.prepend(0);
+            xProfile.prepend(0);
+            xProfile.append(0);
+            xProfile.append(0);
+            yProfile.prepend(0);
+            yProfile.prepend(0);
+            yProfile.append(0);
+            yProfile.append(0);
+
+            xyProfile.append(xProfile);
+            xyProfile.append(yProfile);
+
+
+            double max = 0;
+            for(int i = 0; i < xyProfile.count(); i++){
+                if(fabs(xyProfile.at(i)) > max){
+                    max = fabs(xyProfile.at(i));
+                }
+            }
+            for(int i = 0; i < xyProfile.count(); i++){
+                xyProfile[i] /= max;
+            }
+
+            for(int i = 0; i < 128; i++){
+                pic.append(QVector<double>());
+                for(int j = 0; j < 128; j++){
+                    pic.last().append(0);
+                }
+            }
+            generator->generate(pic,xyProfile);
+
+            double error = 0;
+            for(int y = 0; y < 128; y++){
+                for(int x = 0; x < 128; x++){
+                    error += (yProfile[y] - pic[y][x]/128.0);
+                }
+            }
+            for(int x = 0; x < 128; x++){
+                for(int y = 0; y < 128; y++){
+                    error += (xProfile[x] - pic[y][x]/128.0);
+                }
+            }
+            error /= 256;
+            error *= 100;
+
+            ui->errorLabel->setText(QString::number(fabs(error)));
+
+        }else{
+            ui->networkRadio->setCheckable(false);
+            ui->errorLabel->setText("--");
+        }
+    }else{
+        ui->networkRadio->setCheckable(false);
+        ui->errorLabel->setText("--");
+    }
+}
+
+void ProfileWindow::resize(QVector<double> &vector, int size)
+{
+    /*
+    if(vector.count() > size){
+        qDebug() << "lol!";
+    }*/
+
+    if(!vector.isEmpty()){
+        int lastSize = vector.count();
+        double *x = new double[lastSize];
+        for(int i = 0; i < lastSize; i++){
+            x[i] = i;
+        }
+        gsl_interp_accel *acc = gsl_interp_accel_alloc();
+        gsl_spline *spline = gsl_spline_alloc(gsl_interp_cspline,lastSize);
+        gsl_spline_init(spline,x,vector.constData(),lastSize);
+
+        vector.clear();
+        for(int i = 0; i < size; i++){
+            double yi = gsl_spline_eval(spline,i*(lastSize/(double)size), acc);
+            yi < 0? yi = 0 : yi;
+            vector.append(yi);
+        }
+
+        gsl_spline_free(spline);
+        gsl_interp_accel_free(acc);
+    }
+}
+
+void ProfileWindow::on_mulRadio_clicked()
+{
+    reDraw();
+}
+
+void ProfileWindow::on_networkRadio_clicked()
+{
+    reDraw();
 }

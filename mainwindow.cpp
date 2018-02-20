@@ -33,6 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scrollArea->verticalScrollBar(),SIGNAL(rangeChanged(int,int)),this,SLOT(watcher(int,int)));
     loadingSettings();
     initPlot();
+    generator = new ProfileGenerator("NetworkData.pg",this);
 }
 
 MainWindow::~MainWindow()
@@ -99,7 +100,7 @@ void MainWindow::addProfileToPlot(QString fileName)
     }
     if(!find){
         QColor randomColor(qrand()%256,qrand()%256,qrand()%256);
-        ProfileData *newProfile = new ProfileData(fileName,ui->plot,ui->scrollArea,randomColor,wireLength,legLength,legWidth,legsAngle,deltaX,deltaY,luftAngle,showMirror,angleToRKoef,0);
+        ProfileData *newProfile = new ProfileData(fileName,ui->plot,ui->scrollArea,randomColor,wireLength,legLength,legWidth,legsAngle,deltaX,deltaY,luftAngle,showMirror,angleToRKoef,generator,0);
         if(!newProfile->errors){
             connect(newProfile,SIGNAL(wantToBeDeleted(QString)),this,SLOT(deleteProfileFromPlot(QString)));
             profiles.append(newProfile);

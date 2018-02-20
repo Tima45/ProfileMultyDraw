@@ -5,6 +5,9 @@
 #include <QDebug>
 #include "plot/qcustomplot.h"
 #include "frame.h"
+#include "profilegenerator.h"
+#include <gsl/gsl_spline.h>
+
 namespace Ui {
 class ProfileWindow;
 }
@@ -25,6 +28,7 @@ public:
                            double inPeakX, double inPeakY,
                            double inMiddleLeg1StartX, double inMiddleLeg1StartY, double inMiddleLeg1StopX, double inMiddleLeg1StopY,
                            double inMiddleLeg2StartX, double inMiddleLeg2StartY, double inMiddleLeg2StopX, double inMiddleLeg2StopY,
+                           void *profileGenerator,
                            QWidget *parent = 0);
     ~ProfileWindow();
 
@@ -51,12 +55,19 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_mulRadio_clicked();
+
+    void on_networkRadio_clicked();
+
 private:
     Ui::ProfileWindow *ui;
 
     QCPColorGradient g;
     QCPColorScale *colorScale;
     QCPColorMap *colorMap;
+
+    QCPColorMap *colorMapNetwork;
+    bool profileIsCorrect = false;
 
     QCPItemEllipse *hole;
     QCPItemTracer *center;
@@ -65,8 +76,17 @@ private:
     QCPItemLine *middleLeg1;
     QCPItemLine *middleLeg2;
 
+
+    QVector<int> bordersIndex;
+    ProfileGenerator *generator;
+    QVector<QVector<double>> pic;
+
+
+
+    void buildNetworkColorMap();
     void reDraw();
     void initPlot();
+    void resize(QVector<double> &vector, int size);
 };
 
 #endif // PROFILEWINDOW_H

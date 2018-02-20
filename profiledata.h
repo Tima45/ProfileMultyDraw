@@ -16,11 +16,12 @@ class ProfileData : public QObject
     Q_OBJECT
 public:
     ProfileData(QObject *parent = 0);
-    ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *inScrollArea, QColor inColor, double wireLength, double legLength,double legWidth,double legsAngle, double deltaX, double deltaY, double luftAngle,bool showMirror,double inAngleToMMKoef, QObject *parent);
+    ProfileData(QString inFileName, QCustomPlot *inPlot, QScrollArea *inScrollArea, QColor inColor, double wireLength, double legLength, double legWidth, double legsAngle, double deltaX, double deltaY, double luftAngle, bool showMirror, double inAngleToMMKoef, void *profileGenerator, QObject *parent);
     ~ProfileData();
     bool errors;
     QString fileName;
     QColor color;
+    void *profileGenerator;
 signals:
     void wantToBeDeleted(QString fileName);
 public slots:

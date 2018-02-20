@@ -30,7 +30,12 @@ SOURCES += main.cpp\
     frame.cpp \
     profileinfoblock.cpp \
     profilewindow.cpp \
-    settingsdialog.cpp
+    settingsdialog.cpp \
+    network.cpp \
+    profilegenerator.cpp \
+    neuron.cpp \
+    neuron2i.cpp \
+    neuronni.cpp
 
 HEADERS  += mainwindow.h \
     plot/qcustomplot.h \
@@ -38,7 +43,12 @@ HEADERS  += mainwindow.h \
     frame.h \
     profileinfoblock.h \
     profilewindow.h \
-    settingsdialog.h
+    settingsdialog.h \
+    network.h \
+    profilegenerator.h \
+    neuron.h \
+    neuron2i.h \
+    neuronni.h
 
 FORMS    += mainwindow.ui \
     profileinfoblock.ui \
@@ -53,7 +63,10 @@ LIBS += "C:/Librarys/gsl/lib/libgsl.a"
 
 INCLUDEPATH += "C:/Librarys/DirectoryMonitor/include"
 LIBS += "C:/Librarys/DirectoryMonitor/lib/libDirectoryMonitor.a"
+
+INCLUDEPATH += "C:/Librarys/gsl/include"
 RC_FILE = icon.rc
+
 
 RESOURCES +=
 
