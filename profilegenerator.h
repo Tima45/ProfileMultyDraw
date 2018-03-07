@@ -15,6 +15,7 @@ public:
     void generate(QVector<QVector<double>> &result,QVector<double> xyProfile);
     QVector<QVector<Network*>> networks;
     unsigned int profileSize = 0;
+    NetworkWorkPlace *workplace;
 
 
 signals:

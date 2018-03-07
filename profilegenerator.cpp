@@ -2,15 +2,18 @@
 
 ProfileGenerator::ProfileGenerator(QString loadPath, QObject *parent) : QObject(parent)
 {
+
     QFile f(loadPath);
     if(f.open(QIODevice::ReadOnly)){
         QDataStream s(&f);
 
         s >> profileSize;
+        workplace = new NetworkWorkPlace(profileSize*2,3,10);
         for(unsigned int y = 0; y < profileSize; y++){
             networks.append(QVector<Network*>());
             for(unsigned int x = 0; x < profileSize; x++){
-                Network *n = new Network(s);
+                Network *n = new Network(profileSize*2,3,10);
+                n->load(s);
                 networks.last().append(n);
             }
         }
@@ -33,7 +36,7 @@ void ProfileGenerator::generate(QVector<QVector<double> > &result, QVector<doubl
     if(profileSize*2 == xyProfile.count()){
         for(unsigned int y = 0; y < profileSize; y++){
             for(unsigned int x = 0; x < profileSize; x++){
-                result[y][x] = networks.at(y).at(x)->work(xyProfile.constData(),xyProfile.count());
+                result[y][x] = networks.at(y).at(x)->work(xyProfile.constData(),xyProfile.count(),workplace);
                 //qDebug() << y << x;
             }
         }

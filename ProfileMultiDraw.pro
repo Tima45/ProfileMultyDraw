@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     profilegenerator.cpp \
     neuron.cpp \
     neuron2i.cpp \
-    neuronni.cpp
+    neuronni.cpp \
+    networkworkplace.cpp
 
 HEADERS  += mainwindow.h \
     plot/qcustomplot.h \
@@ -48,7 +49,8 @@ HEADERS  += mainwindow.h \
     profilegenerator.h \
     neuron.h \
     neuron2i.h \
-    neuronni.h
+    neuronni.h \
+    networkworkplace.h
 
 FORMS    += mainwindow.ui \
     profileinfoblock.ui \

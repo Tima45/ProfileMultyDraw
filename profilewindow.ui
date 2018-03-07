@@ -80,6 +80,9 @@
      <property name="minimum">
       <number>1</number>
      </property>
+     <property name="maximum">
+      <number>20</number>
+     </property>
      <property name="value">
       <number>2</number>
      </property>

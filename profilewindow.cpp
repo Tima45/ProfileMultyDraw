@@ -117,8 +117,8 @@ void ProfileWindow::reDraw()
                     colorMapNetwork->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
                     colorMapNetwork->data()->setSize(holeDiameter*pixelsPerMm,holeDiameter*pixelsPerMm);
                     colorMapNetwork->data()->setRange(QCPRange(-holeDiameter/2.0,holeDiameter/2.0),QCPRange(-holeDiameter/2.0,holeDiameter/2.0));
-                    double yR = 128.0/(bordersIndex.at(1) - bordersIndex.at(0));
-                    double xR = 128.0/(bordersIndex.at(3) - bordersIndex.at(2));
+                    double yR = 64.0/(bordersIndex.at(1) - bordersIndex.at(0));
+                    double xR = 64.0/(bordersIndex.at(3) - bordersIndex.at(2));
 
                     for(int i = bordersIndex.at(0); i < bordersIndex.at(1); i++){
                         for(int j = bordersIndex.at(2); j < bordersIndex.at(3); j++){
@@ -334,9 +334,10 @@ void ProfileWindow::buildNetworkColorMap()
                 yProfile[i] -= minAbs;
             }
 
-            resize(xProfile,124);
-            resize(yProfile,124);
+            resize(xProfile,64);
+            resize(yProfile,64);
 
+            /*
             xProfile.prepend(0);
             xProfile.prepend(0);
             xProfile.append(0);
@@ -344,7 +345,7 @@ void ProfileWindow::buildNetworkColorMap()
             yProfile.prepend(0);
             yProfile.prepend(0);
             yProfile.append(0);
-            yProfile.append(0);
+            yProfile.append(0);*/
 
             xyProfile.append(xProfile);
             xyProfile.append(yProfile);
@@ -360,9 +361,9 @@ void ProfileWindow::buildNetworkColorMap()
                 xyProfile[i] /= max;
             }
 
-            for(int i = 0; i < 128; i++){
+            for(int i = 0; i < 64; i++){
                 pic.append(QVector<double>());
-                for(int j = 0; j < 128; j++){
+                for(int j = 0; j < 64; j++){
                     pic.last().append(0);
                 }
             }
@@ -371,16 +372,16 @@ void ProfileWindow::buildNetworkColorMap()
 
             QVector<double> xyProfileResult;
 
-            for(int x = 0; x < 128; x++){
+            for(int x = 0; x < 64; x++){
                 double summ = 0;
-                for(int y = 0; y < 128; y++){
+                for(int y = 0; y < 64; y++){
                     summ += pic[y][x];
                 }
                 xyProfileResult.append(summ);
             }
-            for(int y = 0; y < 128; y++){
+            for(int y = 0; y < 64; y++){
                 double summ = 0;
-                for(int x = 0; x < 128; x++){
+                for(int x = 0; x < 64; x++){
                     summ += pic[y][x];
                 }
                 xyProfileResult.append(summ);

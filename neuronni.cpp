@@ -67,6 +67,35 @@ void NeuronNi::updateWeights()
     deltaBias = 0;
 }
 
+void NeuronNi::save(QDataStream &s)
+{
+    s << inputCount;
+    for(unsigned int i = 0; i < inputCount; i++){
+        s << weights[i];
+    }
+    s << bias;
+}
+
+void NeuronNi::load(QDataStream &s)
+{
+    unsigned int _inputCount;
+    s >> _inputCount;
+    if(_inputCount != inputCount){
+        qDebug() << "Neuron error while loading";
+        throw;
+    }else{
+        for(unsigned int i = 0; i < inputCount; i++){
+            s >> weights[i];
+        }
+        s >> bias;
+    }
+}
+
+int NeuronNi::getInputCount()
+{
+    return (int)inputCount;
+}
+
 NeuronNi::~NeuronNi()
 {
     delete[] weights;

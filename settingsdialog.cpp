@@ -21,6 +21,7 @@ SettingsDialog::SettingsDialog(double wireLength, double legLength, double legWi
 SettingsDialog::~SettingsDialog()
 {
     delete ui;
+    this->deleteLater();
 }
 
 void SettingsDialog::on_acceptButton_clicked()

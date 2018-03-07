@@ -33,7 +33,7 @@ MainWindow::MainWindow(QWidget *parent) :
     connect(ui->scrollArea->verticalScrollBar(),SIGNAL(rangeChanged(int,int)),this,SLOT(watcher(int,int)));
     loadingSettings();
     initPlot();
-    generator = new ProfileGenerator("NetworkData.pg",this);
+    generator = new ProfileGenerator("NetworkData.64.3.10.bin",this);
 }
 
 MainWindow::~MainWindow()
@@ -222,9 +222,11 @@ void MainWindow::rescaleAxis(QCPRange r)
 
 void MainWindow::on_settingsButton_clicked()
 {  
-    SettingsDialog *dialog = new SettingsDialog(wireLength,legLength,legWidth,legsAngle,deltaX,deltaY,luftAngle,showMirror,angleToRKoefNumerator,angleToRKoefDenominator,this);
+    SettingsDialog *dialog = new SettingsDialog(wireLength,legLength,legWidth,legsAngle,deltaX,deltaY,luftAngle,showMirror,angleToRKoefNumerator,angleToRKoefDenominator);
     connect(dialog,SIGNAL(settingsUpdate(double,double,double,double,double,double,double,bool,double,double)),this,SLOT(reloadSettings(double,double,double,double,double,double,double,bool,double,double)));
-    dialog->exec();
+    dialog->setAttribute(Qt::WA_ShowModal);
+    dialog->setAttribute(Qt::WA_DeleteOnClose);
+    dialog->show();
 }
 
 void MainWindow::reloadSettings(double _wireLength,double _legLength,double _legWidth,double _legAngle, double _deltaX, double _deltaY, double _luftAngle, bool _showMirror,double _angleToRKoefNumerator, double _angleToRKoefDenominator)
