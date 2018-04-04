@@ -16,6 +16,8 @@ SettingsDialog::SettingsDialog(double wireLength, double legLength, double legWi
     ui->checkBox->setChecked(showMirror);
     ui->angleToRKoefDenominatorBox->setValue(angleToRKoefDenominator);
     ui->angleToRKoefNumeratorBox->setValue(angleToRKoefNumerator);
+    ui->currentCalibrationFileNamLabel->setText(MainWindow::calibrationFileName);
+
     ui->picLabel->setPixmap(QPixmap("settingsPic.png"));
 }
 SettingsDialog::~SettingsDialog()
@@ -32,14 +34,13 @@ void SettingsDialog::on_acceptButton_clicked()
 
 void SettingsDialog::on_saveCalibrationButton_clicked()
 {
-    {
     QString path = QFileDialog::getSaveFileName(this,"Сохранить калибровку","","Calibration file (*.cb)");
-    QSettings settings(MainWindow::settingsFileName,QSettings::IniFormat);
-    MainWindow::calibrationFileName = path;
-    settings.setValue(MainWindow::calibrationFileNameFieldName,MainWindow::calibrationFileName);
-    }
-
     {
+        QSettings settings(MainWindow::settingsFileName,QSettings::IniFormat);
+        MainWindow::calibrationFileName = path;
+        settings.setValue(MainWindow::calibrationFileNameFieldName,MainWindow::calibrationFileName);
+        ui->currentCalibrationFileNamLabel->setText(MainWindow::calibrationFileName);
+    }
     QSettings settings(MainWindow::calibrationFileName,QSettings::IniFormat);
     settings.setValue(MainWindow::wireLengthFieldName,ui->wireLengthBox->value());
     settings.setValue(MainWindow::legLengthFieldName,ui->legLengthBox->value());
@@ -51,13 +52,21 @@ void SettingsDialog::on_saveCalibrationButton_clicked()
     settings.setValue(MainWindow::legsAngleFieldName,ui->legsAngleBox->value());
     settings.setValue(MainWindow::angleToRKoefNumeratorFieldName,ui->angleToRKoefNumeratorBox->value());
     settings.setValue(MainWindow::angleToRKoefDenominatorFieldName,ui->angleToRKoefDenominatorBox->value());
-    }
 }
 
 void SettingsDialog::on_loadCalibrationButton_clicked()
 {
     QString path = QFileDialog::getOpenFileName(this,"Открыть калибровку","","Calibration file (*.cb)");
     if(QFileInfo(path).isFile()){
+
+        {
+            QSettings settings(MainWindow::settingsFileName,QSettings::IniFormat);
+            MainWindow::calibrationFileName = path;
+            settings.setValue(MainWindow::calibrationFileNameFieldName,MainWindow::calibrationFileName);
+            ui->currentCalibrationFileNamLabel->setText(MainWindow::calibrationFileName);
+        }
+
+
         QSettings settings(path,QSettings::IniFormat);
 
         ui->wireLengthBox->setValue(settings.value(MainWindow::wireLengthFieldName).toDouble());
