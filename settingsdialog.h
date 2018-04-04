@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include <QSettings>
+#include <QFileDialog>
 #include "mainwindow.h"
 namespace Ui {
 class SettingsDialog;
@@ -20,6 +21,10 @@ public:
 
 private slots:
     void on_acceptButton_clicked();
+
+    void on_saveCalibrationButton_clicked();
+
+    void on_loadCalibrationButton_clicked();
 
 private:
     Ui::SettingsDialog *ui;

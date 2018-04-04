@@ -26,7 +26,10 @@ public:
     //----------------------------------
     //Settings
     static QString settingsFileName;
+    static QString calibrationFileNameFieldName;
     static QString lastPathFieldName;
+    //Calibration
+    static QString calibrationFileName;
     static QString wireLengthFieldName;
     static QString legLengthFieldName;
     static QString legWidthFieldName;
@@ -53,21 +56,23 @@ private slots:
     void on_pushButton_clicked();
     void rescaleAxis(QCPRange r);
 
-    void on_settingsButton_clicked();
 
     void reloadSettings(double _wireLength, double _legLength, double _legWidth, double _legAngle, double _deltaX, double _deltaY, double _luftAngle, bool _showMirror, double _angleToRKoefNumerator, double _angleToRKoefDenominator);
+    void on_calibrationButton_clicked();
+
 private:
     bool fromMonitor = false;
     Ui::MainWindow *ui;
 
     void loadingSettings();
+    void loadCalibration();
     //----------------------------------
     //global info
     double wireLength = 169;
     double legLength = 50;
     double legWidth = 0.5;
-    double deltaX = -190;
-    double deltaY = 0;
+    double deltaX = 0;
+    double deltaY = -190;
     double luftAngle = 0.4;
     double angleToRKoefNumerator = 15;
     double angleToRKoefDenominator = 6.8;

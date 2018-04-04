@@ -82,13 +82,13 @@
        </size>
       </property>
       <property name="toolTip">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;07.03.2018&lt;br/&gt;Версия 2.7&lt;br/&gt;Версия Qt 5.8&lt;br/&gt;Тимофей&lt;br/&gt;timaisabrony@gmail.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;04.04.2018&lt;br/&gt;Версия 2.8&lt;br/&gt;Версия Qt 5.8&lt;br/&gt;Тимофей&lt;br/&gt;timaisabrony@gmail.com&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="styleSheet">
        <string notr="true">color: gray</string>
       </property>
       <property name="text">
-       <string>v2.7</string>
+       <string>v2.8</string>
       </property>
      </widget>
     </item>
@@ -151,7 +151,7 @@
      </widget>
     </item>
     <item row="0" column="3">
-     <widget class="QPushButton" name="settingsButton">
+     <widget class="QPushButton" name="calibrationButton">
       <property name="maximumSize">
        <size>
         <width>80</width>
@@ -162,7 +162,7 @@
        <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Настройки основных констант связанных с геометрией профилометра и прочее.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
-       <string>Настройки</string>
+       <string>Калибровка</string>
       </property>
      </widget>
     </item>
