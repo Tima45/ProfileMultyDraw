@@ -306,105 +306,112 @@ void ProfileWindow::buildNetworkColorMap()
             QVector<double> yProfile;
             QVector<double> xyProfile;
 
-            profileIsCorrect = true;
-            ui->networkRadio->setChecked(true);
+
             for(int i = bordersIndex.at(0); i < bordersIndex.at(1); i++){
                 yProfile.append(fabs(ampers.at(i)));
             }
             for(int i = bordersIndex.at(2); i < bordersIndex.at(3); i++){
                 xProfile.append(fabs(ampers.at(i)));
             }
-            double minAbs = fabs(xProfile.first());
-            for(int i = 1; i < xProfile.count(); i++){
-                if(fabs(xProfile.at(i)) < minAbs){
-                    minAbs = fabs(xProfile.at(i));
+
+            if(yProfile.count() > 2 && xProfile.count() > 2){
+                profileIsCorrect = true;
+                ui->networkRadio->setChecked(true);
+
+                double minAbs = fabs(xProfile.first());
+                for(int i = 1; i < xProfile.count(); i++){
+                    if(fabs(xProfile.at(i)) < minAbs){
+                        minAbs = fabs(xProfile.at(i));
+                    }
                 }
-            }
-            for(int i = 0; i < xProfile.count(); i++){
-                xProfile[i] -= minAbs;
-            }
-
-            minAbs = fabs(yProfile.first());
-            for(int i = 1; i < yProfile.count(); i++){
-                if(fabs(yProfile.at(i)) < minAbs){
-                    minAbs = fabs(yProfile.at(i));
+                for(int i = 0; i < xProfile.count(); i++){
+                    xProfile[i] -= minAbs;
                 }
-            }
-            for(int i = 0; i < yProfile.count(); i++){
-                yProfile[i] -= minAbs;
-            }
 
-            resize(xProfile,64);
-            resize(yProfile,64);
-
-            /*
-            xProfile.prepend(0);
-            xProfile.prepend(0);
-            xProfile.append(0);
-            xProfile.append(0);
-            yProfile.prepend(0);
-            yProfile.prepend(0);
-            yProfile.append(0);
-            yProfile.append(0);*/
-
-            xyProfile.append(xProfile);
-            xyProfile.append(yProfile);
-
-
-            double max = 0;
-            for(int i = 0; i < xyProfile.count(); i++){
-                if(fabs(xyProfile.at(i)) > max){
-                    max = fabs(xyProfile.at(i));
+                minAbs = fabs(yProfile.first());
+                for(int i = 1; i < yProfile.count(); i++){
+                    if(fabs(yProfile.at(i)) < minAbs){
+                        minAbs = fabs(yProfile.at(i));
+                    }
                 }
-            }
-            for(int i = 0; i < xyProfile.count(); i++){
-                xyProfile[i] /= max;
-            }
-
-            for(int i = 0; i < 64; i++){
-                pic.append(QVector<double>());
-                for(int j = 0; j < 64; j++){
-                    pic.last().append(0);
+                for(int i = 0; i < yProfile.count(); i++){
+                    yProfile[i] -= minAbs;
                 }
-            }
-            generator->generate(pic,xyProfile);
+
+                resize(xProfile,64);
+                resize(yProfile,64);
+
+                /*
+                xProfile.prepend(0);
+                xProfile.prepend(0);
+                xProfile.append(0);
+                xProfile.append(0);
+                yProfile.prepend(0);
+                yProfile.prepend(0);
+                yProfile.append(0);
+                yProfile.append(0);*/
+
+                xyProfile.append(xProfile);
+                xyProfile.append(yProfile);
 
 
-            QVector<double> xyProfileResult;
-
-            for(int x = 0; x < 64; x++){
-                double summ = 0;
-                for(int y = 0; y < 64; y++){
-                    summ += pic[y][x];
+                double max = 0;
+                for(int i = 0; i < xyProfile.count(); i++){
+                    if(fabs(xyProfile.at(i)) > max){
+                        max = fabs(xyProfile.at(i));
+                    }
                 }
-                xyProfileResult.append(summ);
-            }
-            for(int y = 0; y < 64; y++){
-                double summ = 0;
+                for(int i = 0; i < xyProfile.count(); i++){
+                    xyProfile[i] /= max;
+                }
+
+                for(int i = 0; i < 64; i++){
+                    pic.append(QVector<double>());
+                    for(int j = 0; j < 64; j++){
+                        pic.last().append(0);
+                    }
+                }
+                generator->generate(pic,xyProfile);
+
+
+                QVector<double> xyProfileResult;
+
                 for(int x = 0; x < 64; x++){
-                    summ += pic[y][x];
+                    double summ = 0;
+                    for(int y = 0; y < 64; y++){
+                        summ += pic[y][x];
+                    }
+                    xyProfileResult.append(summ);
                 }
-                xyProfileResult.append(summ);
-            }
-            double maxResult = 0;
-            for(int i = 0; i < xyProfileResult.count(); i++){
-                if(xyProfileResult.at(i) > maxResult){
-                    maxResult = xyProfileResult.at(i);
+                for(int y = 0; y < 64; y++){
+                    double summ = 0;
+                    for(int x = 0; x < 64; x++){
+                        summ += pic[y][x];
+                    }
+                    xyProfileResult.append(summ);
                 }
-            }
-            for(int i = 0; i < xyProfileResult.count(); i++){
-                xyProfileResult[i] /= maxResult;
-            }
+                double maxResult = 0;
+                for(int i = 0; i < xyProfileResult.count(); i++){
+                    if(xyProfileResult.at(i) > maxResult){
+                        maxResult = xyProfileResult.at(i);
+                    }
+                }
+                for(int i = 0; i < xyProfileResult.count(); i++){
+                    xyProfileResult[i] /= maxResult;
+                }
 
-            double error = 0;
-            for(int i = 0; i < xyProfile.count(); i++){
-                error += fabs(xyProfile.at(i)-xyProfileResult.at(i));
+                double error = 0;
+                for(int i = 0; i < xyProfile.count(); i++){
+                    error += fabs(xyProfile.at(i)-xyProfileResult.at(i));
+                }
+                error /= 256;
+                error *= 100;
+
+                ui->errorLabel->setText(QString::number(fabs(100.0-error)));
+            }else{
+                ui->networkRadio->setCheckable(false);
+                ui->errorLabel->setText("--");
             }
-            error /= 256;
-            error *= 100;
-
-            ui->errorLabel->setText(QString::number(fabs(100.0-error)));
-
         }else{
             ui->networkRadio->setCheckable(false);
             ui->errorLabel->setText("--");
